@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<!--
+Created using JS Bin
+http://jsbin.com
+
+Copyright (c) 2025 by anonymous (http://jsbin.com/xobepabige/9/edit)
+
+Released under the MIT license: http://jsbin.mit-license.org
+-->
+<meta name="robots" content="noindex">
+<meta name="robots" content="noindex">
+<meta name="robots" content="noindex">
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài kiểm tra Tiếng Pháp</title>
+    <style>
+        /* CSS để làm cho trang kiểm tra đẹp hơn */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: 20px;
+            background-color: #f0f2f5;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .quiz-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-header {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 0.95em;
+            color: #555;
+        }
+        
+        .info-header p {
+            margin: 0;
+        }
+
+        .quiz-status-bar {
+            
+            top: 0;
+           /*  background-color: #4a5a7b; */
+            background-color: white;
+            border: 2px solid #4285F4;
+            color: #0047ab;
+            padding: 15px 30px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0;
+            z-index: 1000;
+        }
+
+        .quiz-status-bar h1 {
+            text-align: center;
+            margin: 0 auto;
+            font-size: 1.8em;
+            color: #0047ab;
+        }
+
+        #score-display, #timer-display {
+            font-size: 1.2em;
+            font-weight: bold;
+            background-color: #ffffff;
+            color: #0047ab;
+            padding: 5px 15px;
+            border-radius: 20px;          
+        }
+        
+        #special-chars-palette {
+            position: sticky;
+            top: 0;
+            padding: 10px;
+           background-color: #f8f9fa;
+            
+            border-bottom: 1px solid #e0e0e0;
+            z-index: 999;
+            text-align: center;
+            margin-left: -30px;
+            margin-right: -30px;
+            margin-bottom: 25px;
+        }
+
+        #special-chars-palette button {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 1.2em;
+            width: 35px;
+            height: 35px;
+            margin: 2px;
+            border: 1px solid #ccc;
+            color: darkgreen;
+            background-color: #f9f9f9;
+            cursor: pointer;
+            border-radius: 4px;
+            /* border: 2px solid #4285F4; */
+        }
+        #special-chars-palette button:hover {
+            background-color: #3498db;
+            color: white;
+        }
+      .score-time {
+        padding: 5px;
+        position: sticky;        
+        text-align: center;
+      }
+        
+        .audio-player-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            margin-right: 15px;
+            vertical-align: middle;
+        }
+
+        .audio-player-button svg {
+            width: 28px;
+            height: 28px;
+            fill: #3498db;
+            transition: fill 0.2s;
+        }
+        
+        .audio-player-button:hover svg {
+            fill: #2980b9;
+        }
+        
+         .audio-player-button.playing svg {
+            fill: #e74c3c;
+        }
+
+        .section-title {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .reading-section-image {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .question-block {
+            margin-bottom: 25px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #fdfdfd;
+        }
+
+        .question-text {
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+      .question-translation{
+        margin-top: 0px;
+        font-style: italic;
+      }
+
+        /* === THAY ĐỔI: Căn lề trái cho ảnh trong câu hỏi === */
+        .question-image, .listening-image {
+            display: block;
+            height: auto;
+            margin: 20px 0; /* Bỏ 'auto' để căn lề trái */
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .question-image {
+             max-width: 100%;
+        }
+
+        .listening-image {
+            max-width: 300px;
+        }
+
+        .reading-passage, .cloze-passage {
+            background-color: #eef3f8;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin-bottom: 15px;
+            font-style: italic;
+            line-height: 2.5;
+        }
+        
+        .cloze-passage input {
+            width: 180px !important;
+            max-width: none !important;
+            text-align: center;
+            font-style: normal;
+        }
+
+        .answers label {
+            display: block;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            max-width: auto;
+        }
+
+        .answers label:hover {
+            background-color: #e9ecef;
+        }
+
+        .answers input[type="radio"] {
+            margin-right: 10px;
+        }
+        
+        .question-block input[type="text"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1em;
+            width: 100%; 
+            max-width: auto;
+            box-sizing: border-box; 
+            margin-top: 5px;
+        }
+
+        .validate-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            display: block;
+            margin-top: 15px; 
+            transition: background-color 0.3s;
+        }
+
+        .validate-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .validate-btn:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        
+        .show-transcription-btn {
+            background-color: #7f8c8d;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            cursor: pointer;
+            display: block;
+            margin-top: 10px;
+        }
+
+        .feedback {
+            margin-top: 15px;
+            font-weight: normal;
+            font-size: 0.95em;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .transcription-text {
+            background-color: #f5f5f5;
+            border-left: 4px solid #7f8c8d;
+            padding: 10px 15px;
+            margin-top: 15px;
+            font-style: italic;
+            color: #34495e;
+        }
+        
+        .feedback-correct {
+            background-color: #d4edda;            
+            color: #155724;
+            border: 2px solid #008001;
+        }
+        
+        .feedback-incorrect {
+            /* background-color: #f8d7da; */
+          background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .feedback-warning {
+            /* background-color: #fffbe6; */
+          background-color: #fffbe6;
+            color: #8a6d3b;
+        }
+
+        .correct-answer {
+            /* background-color: #d4edda !important; */
+            background-color: #008001 !important;
+            border-color: #c3e6cb !important;
+            color:white;
+            /* border: 2px solid #008001; !important; */
+        }
+
+        .incorrect-answer {
+            background-color: #f8d7da !important;
+            border-color: #f5c6cb !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container">
+        <div class="info-header">
+            
+            <p><strong>Enseignant:</strong> Nguyễn Hoàng Vũ</p>
+            <p><strong>Jour :</strong> <span id="test-date"></span></p>
+        </div>
+
+        <div class="quiz-status-bar">
+            <h1>Bài kiểm tra Tiếng Pháp</h1>
+          
+        </div>
+      
+        
+        <div id="special-chars-palette">
+            <button type="button" onclick="insertChar('é')">é</button>
+            <button type="button" onclick="insertChar('è')">è</button>            
+            <button type="button" onclick="insertChar('à')">à</button>
+            <button type="button" onclick="insertChar('ê')">ê</button>
+            <button type="button" onclick="insertChar('â')">â</button>
+            <button type="button" onclick="insertChar('î')">î</button>
+            <button type="button" onclick="insertChar('ô')">ô</button>
+            <button type="button" onclick="insertChar('û')">û</button>
+            <button type="button" onclick="insertChar('ç')">ç</button>
+            <button type="button" onclick="insertChar('ë')">ë</button>
+            <button type="button" onclick="insertChar('ï')">ï</button>
+            
+            <button type="button" onclick="insertChar('ü')">ü</button>
+            <button type="button" onclick="insertChar('œ')">œ</button>
+            <div class="score-time">
+                 <span id="score-display">0 / 29</span>
+                <span id="timer-display">10:00</span>
+           </div>
+        </div>
+          
+
+        <div id="all-questions-container">
+            
+            <div class="question-block" id="">                 
+                 <div>                     
+                    <p class="question-text"><span style="color: rgb(235, 106, 106)">Écoute et réponds aux questions</span>
+                        <a href="https://drive.google.com/file/d/1ZTPJU8u0Qdo3F7A6U2LZ_G59zWRipWJM/view?usp=drive_link">
+                            <button type="button" class="audio-player-button" onclick="playAudio(10, this)">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28px" height="28px"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"></path></svg>
+                            </button>
+                        </a> 
+                    </p>
+                </div>
+            <!-- </div> -->
+
+            
+            <div class="question-block" id="q1">
+                <p class="question-text">1. Radio France commence à quelle heure ? <br/> - À ______ heures</p>
+                <input type="text" id="q1-input" placeholder="" onfocus="setLastFocused(this)">
+                <button class="validate-btn" onclick="validateText(1, '10')">Valider</button>
+                <div class="feedback"></div>
+            </div>
+            <div class="question-block" id="q2">
+                <p class="question-text">2. Quand le nouveau musée d'art moderne va ouvrir ? <br/> - ______ prochain</p>
+                <input type="text" id="q2-input" placeholder="" onfocus="setLastFocused(this)">
+                <button class="validate-btn" onclick="validateText(2, 'jeudi')">Valider</button>
+                <div class="feedback"></div>
+            </div>
+
+            <div class="question-block" id="q3">
+                <p class="question-text">3. Le musée va ouvrir de 9 h à 19 h du ______ au vendredi.</p>
+                <input type="text" id="q3-input" placeholder="" onfocus="setLastFocused(this)">
+                <button class="validate-btn" onclick="validateText(3, 'mardi')">Valider</button>
+                <div class="feedback"></div>
+            </div>
+            <div class="question-block" id="q4">
+                <p class="question-text">4. Le samedi et le dimanchede, il va ouvrir de 9 h 30 à ______  h 30.</p>
+                <input type="text" id="q4-input" placeholder="" onfocus="setLastFocused(this)">
+                <button class="validate-btn" onclick="validateText(4, '17')">Valider</button>
+                <div class="feedback"></div>
+            </div>
+            <div class="question-block" id="q5">
+                <p class="question-text">5. Pour participer, appelez le 0 805 _____ </p>
+                <input type="text" id="q5-input" placeholder="" onfocus="setLastFocused(this)">
+                <button class="validate-btn" onclick="validateText(5, '151215')">Valider</button>
+                <div class="feedback"></div>
+            </div>
+
+            
+        </div>
+    </div>
+
+    <script>
+        let score = 0;
+        let lastFocusedInput = null;
+        let timeInSeconds = 600;
+        let timerInterval = null;
+
+        const clozeAnswers = [
+            ['me lève', 'croissants', 'bus', 'économie', 'livre'],
+            ['marché', 'tomates', 'pommes', 'animé'],
+            ['chien', 'intelligent', 'rouge', 'dort']
+        ];
+        
+        const maxScore = 5 //clozeAnswers.flat().length; // 16 câu đơn + 13 chỗ trống = 29 điểm
+
+        const transcriptionData = {
+            9: "Le train pour Lyon partira à quinze heures trente du quai numéro sept.",
+            10: "N'oubliez pas d'acheter du pain, du lait et trois croissants pour le petit-déjeuner."
+        };
+        const feedbackExplanations = {
+            1: "Chính xác!",
+            2: "Chính xác!",
+            3: "Chính xác!",
+            4: "Chính xác!",
+            5: "Chính xác!",
+            6: "Chính xác!",
+            
+        };
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const today = new Date();
+            const day = String(today.getDate()).padStart(2, '0');
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const year = today.getFullYear();
+            document.getElementById('test-date').textContent = `${day}/${month}/${year}`;
+            
+            updateScoreDisplay();
+            startTimer();
+        });
+
+        function startTimer() {
+            const timerDisplay = document.getElementById('timer-display');
+            clearInterval(timerInterval); 
+            
+            timerInterval = setInterval(() => {
+                timeInSeconds--;
+                const minutes = Math.floor(timeInSeconds / 60);
+                const seconds = timeInSeconds % 60;
+                timerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                if (timeInSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    timerDisplay.textContent = "Hết giờ!";
+                    alert("Hết giờ làm bài!");
+                    document.querySelectorAll('.validate-btn').forEach(btn => btn.disabled = true);
+                }
+            }, 1000);
+        }
+
+        function updateScoreDisplay() {
+            const scoreDisplay = document.getElementById('score-display');
+            scoreDisplay.textContent = `Score: ${score} / ${maxScore}`;
+        }
+        
+        function updateScore(points = 1) {
+            score += points;
+            updateScoreDisplay();
+        }
+        
+        function setLastFocused(element) {
+            lastFocusedInput = element;
+        }
+
+        function insertChar(char) {
+            if (lastFocusedInput) {
+                const startPos = lastFocusedInput.selectionStart;
+                const endPos = lastFocusedInput.selectionEnd;
+                const value = lastFocusedInput.value;
+                lastFocusedInput.value = value.substring(0, startPos) + char + value.substring(endPos, value.length);
+                lastFocusedInput.focus();
+                lastFocusedInput.selectionStart = startPos + 1;
+                lastFocusedInput.selectionEnd = startPos + 1;
+            }
+        }
+        
+        function playAudio(questionNumber, buttonElement) {
+            const audioPlayer = document.getElementById(`audio-player-${questionNumber}`);
+            if (audioPlayer) {
+                audioPlayer.play();
+                buttonElement.classList.add('playing');
+                buttonElement.disabled = true;
+                audioPlayer.onended = () => {
+                    buttonElement.classList.remove('playing');
+                    buttonElement.disabled = false;
+                };
+            }
+        }
+
+        function showTranscription(questionNumber) {
+            const transcriptText = transcriptionData[questionNumber];
+            const transcriptContainer = document.getElementById(`transcription-${questionNumber}`);
+            const transcriptButton = document.getElementById(`show-transcription-btn-${questionNumber}`);
+
+            if (transcriptText && transcriptContainer) {
+                transcriptContainer.textContent = transcriptText;
+                transcriptContainer.style.display = 'block';
+                if(transcriptButton) transcriptButton.style.display = 'none';
+            }
+        }
+
+        function validateRadio(questionNumber, correctAnswer) {
+            const questionBlock = document.getElementById(`q${questionNumber}`);
+            const radios = document.getElementsByName(`q${questionNumber}`);
+            const feedback = questionBlock.querySelector('.feedback');
+            const button = questionBlock.querySelector('.validate-btn');
+            let selectedAnswer = null;
+
+            radios.forEach(radio => { if (radio.checked) { selectedAnswer = radio; } });
+
+            if (selectedAnswer === null) {
+                feedback.textContent = "Vui lòng chọn một đáp án!";
+                feedback.className = 'feedback feedback-warning';
+                return;
+            }
+            
+            button.disabled = true;
+            radios.forEach(radio => radio.disabled = true);
+            const selectedLabel = selectedAnswer.parentElement;
+            const explanation = feedbackExplanations[questionNumber];
+
+            if (selectedAnswer.value === correctAnswer) {
+                feedback.textContent = explanation;
+                feedback.className = 'feedback feedback-correct';
+                selectedLabel.classList.add('correct-answer');
+                updateScore();
+            } else {
+                const cleanedExplanation = explanation.replace("Chính xác! ", "");
+                feedback.innerHTML = `<strong>Không chính xác.</strong> ${cleanedExplanation}<br>Đáp án đúng là lựa chọn <strong>"${correctAnswer.toUpperCase()}"</strong>.`;
+                feedback.className = 'feedback feedback-incorrect';
+                selectedLabel.classList.add('incorrect-answer');
+                radios.forEach(radio => { if (radio.value === correctAnswer) { radio.parentElement.classList.add('correct-answer'); } });
+            }
+
+            if (document.getElementById(`audio-player-${questionNumber}`)) {
+                const transcriptBtn = document.getElementById(`show-transcription-btn-${questionNumber}`);
+                if (transcriptBtn) {
+                    transcriptBtn.style.display = 'block';
+                }
+            }
+        }
+        
+        function validateText(questionNumber, correctAnswer) {
+            const questionBlock = document.getElementById(`q${questionNumber}`);
+            const inputField = questionBlock.querySelector('input[type="text"]');
+            const feedback = questionBlock.querySelector('.feedback');
+            const button = questionBlock.querySelector('.validate-btn');
+            const userAnswer = inputField.value.trim();
+
+            if (userAnswer === "") {
+                feedback.textContent = "Vui lòng điền câu trả lời của bạn.";
+                feedback.className = 'feedback feedback-warning';
+                return;
+            }
+            
+            const explanation = feedbackExplanations[questionNumber];
+            
+            button.disabled = true;
+            inputField.disabled = true;
+
+            if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+                feedback.textContent = explanation;
+                feedback.className = 'feedback feedback-correct';
+                inputField.classList.add('correct-answer');
+                updateScore();
+            } else {
+                const cleanedExplanation = explanation.replace("Chính xác! ", "");
+                feedback.innerHTML = `<strong>Không chính xác.</strong> ${cleanedExplanation}<br>Đáp án đúng phải là: <strong>${correctAnswer}</strong>`;
+                feedback.className = 'feedback feedback-incorrect';
+                inputField.classList.add('incorrect-answer');
+            }
+        }
+
+        function validateCloze(clozeSetIndex, questionId) {
+            const currentAnswers = clozeAnswers[clozeSetIndex - 1]; 
+            const questionBlock = document.getElementById(`q${questionId}`);
+            const button = questionBlock.querySelector('.validate-btn');
+            const feedback = questionBlock.querySelector('.feedback');
+            let correctCount = 0;
+
+            for (let i = 0; i < currentAnswers.length; i++) {
+                const inputId = `cloze-${clozeSetIndex}-${i + 1}`;
+                const inputElement = document.getElementById(inputId);
+                if (inputElement.value.trim() === "") {
+                    feedback.textContent = "Vui lòng điền đầy đủ tất cả các chỗ trống.";
+                    feedback.className = 'feedback feedback-warning';
+                    return;
+                }
+            }
+
+            for (let i = 0; i < currentAnswers.length; i++) {
+                const inputId = `cloze-${clozeSetIndex}-${i + 1}`;
+                const inputElement = document.getElementById(inputId);
+                
+                const userAnswer = inputElement.value.trim().toLowerCase();
+                const correctAnswer = currentAnswers[i].toLowerCase();
+
+                if (userAnswer === correctAnswer) {
+                    inputElement.classList.add('correct-answer');
+                    correctCount++;
+                } else {
+                    inputElement.classList.add('incorrect-answer');
+                    inputElement.value = currentAnswers[i];
+                }
+                
+                inputElement.disabled = true;
+            }
+
+            if (correctCount > 0) {
+                updateScore(correctCount);
+            }
+            
+            feedback.textContent = `Bạn đã điền đúng ${correctCount} trên ${currentAnswers.length} từ.`;
+            feedback.className = 'feedback feedback-correct';
+            
+            button.disabled = true;
+        }
+
+    </script>
+</body>
+</html>
